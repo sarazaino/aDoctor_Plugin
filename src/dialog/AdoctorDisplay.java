@@ -3,7 +3,11 @@ package dialog;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiManager;
 import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
@@ -28,8 +32,11 @@ public class AdoctorDisplay {
 
     private final Map<AdoctorCategory, JTable> tables = new EnumMap<AdoctorCategory, JTable>(AdoctorCategory.class);
     private final JTabbedPane tabbedPane = new JTabbedPane();
+    private Project project;
 
     public AdoctorDisplay(@NotNull Project project) {
+        this.project = project;
+
         JTable resultTable = getTable();
         tables.put(AdoctorCategory.Result,resultTable);
         JTable logTable = new JBTable();
@@ -83,7 +90,7 @@ public class AdoctorDisplay {
         smellDataArrayList.add(smellData);
         smellDataArrayList.add(new SmellData("com.provaprovaprovaprova",valori));
         smellDataArrayList.add(new SmellData("com.provaprovaprovaprova",valori));
-        smellDataArrayList.add(new SmellData("com.provaprovaprovaprova",valori));
+        smellDataArrayList.add(new SmellData("dialog/Prova",valori));
         smellDataArrayList.add(new SmellData("com.provaprovaprovaprovaprova",valori));
         smellDataArrayList.add(new SmellData("com.provaprovaprovaprova",valori));
         smellDataArrayList.add(new SmellData("com.provaprovaprovaprova",valori));
@@ -138,7 +145,11 @@ public class AdoctorDisplay {
             public void mouseClicked(MouseEvent e) {
                 if (table.getSelectedColumn()==0)
                 {
-                    Notifications.Bus.notify(new com.intellij.notification.Notification("event", "Success", "Class name: " + table.getValueAt(table.getSelectedRow(), table.getSelectedColumn()), NotificationType.INFORMATION));
+                    String name_class = table.getValueAt(table.getSelectedRow(),table.getSelectedColumn()).toString();
+                    PsiManager psiManager = PsiManager.getInstance(project);
+                    String class_to_open = psiManager.findDirectory(project.getBaseDir()).getVirtualFile().getPath()+"/src/"+name_class+".java";
+                    VirtualFile file_class = LocalFileSystem.getInstance().findFileByPath(class_to_open);
+                    FileEditorManager.getInstance(project).openFile(file_class,true,true);
                 }
             }
 
