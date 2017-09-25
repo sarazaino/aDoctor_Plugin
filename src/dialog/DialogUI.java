@@ -1,31 +1,19 @@
 package dialog;
 
-import com.intellij.notification.NotificationType;
-import com.intellij.notification.Notifications;
-import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.progress.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.ui.popup.JBPopupFactory;
-import com.intellij.openapi.util.Computable;
-import com.intellij.openapi.util.ThrowableComputable;
-import com.intellij.openapi.wm.WindowManager;
-import com.intellij.ui.awt.RelativePoint;
-import org.apache.batik.apps.svgbrowser.StatusBar;
 import org.apache.commons.lang.StringUtils;
-import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
-
+import process.RunAndroidSmellDetection;
 import javax.annotation.Nullable;
-import javax.management.Notification;
 import javax.swing.*;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 
 public class DialogUI extends DialogWrapper {
 
@@ -52,6 +40,8 @@ public class DialogUI extends DialogWrapper {
     private javax.swing.JTextField outputFileField;
     private javax.swing.JButton outputFolderButton;
     private javax.swing.JButton startProcessButton;
+    private String outputPath;
+    private javax.swing.JTextArea statusLabel;
     @NotNull private Project project;
     private JPanel panel;
 
@@ -93,6 +83,7 @@ public class DialogUI extends DialogWrapper {
         SLCheck = new javax.swing.JCheckBox();
         UCCheck = new javax.swing.JCheckBox();
         panel = new JPanel();
+        statusLabel = new javax.swing.JTextArea();
 
         jLabel1.setText("Input Folder");
 
@@ -108,43 +99,26 @@ public class DialogUI extends DialogWrapper {
         startProcessButton.setText("Start Process");
         startProcessButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                startProcessButtonAction();
+
                 ProgressManager.getInstance().run(new Task.Backgroundable(project, "Title"){
                     public void run(@NotNull ProgressIndicator progressIndicator) {
 
                         // start process
+                        startProcessButtonAction();
 
                         // Set the progress bar percentage and text
-                        progressIndicator.setFraction(0.10);
-                        progressIndicator.setText("90% to finish");
-
-                        try {
-                            Thread.sleep(3000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-
-                        // 50% done
                         progressIndicator.setFraction(0.50);
-                        progressIndicator.setText("50% to finish");
+                        progressIndicator.setText("aDoctor is processing...");
 
-                        try {
-                            Thread.sleep(3000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        // Finished
-                        progressIndicator.setFraction(1.0);
-                        progressIndicator.setText("finished");
 
                         //Notifica nella status bar
 
-                        Notifications.Bus.notify(new com.intellij.notification.Notification("event", "Success", "Successfully data analyzed by ''" + "aDoctor" + "'' plugin.", NotificationType.INFORMATION));
-                        Notifications.Bus.notify(new com.intellij.notification.Notification("event", "Error", "Error in data analyzed by ''" + "aDoctor" + "'' plugin.", NotificationType.ERROR));
+                        /*Notifications.Bus.notify(new com.intellij.notification.Notification("event", "Success", "Successfully data analyzed by ''" + "aDoctor" + "'' plugin.", NotificationType.INFORMATION));
+                        Notifications.Bus.notify(new com.intellij.notification.Notification("event", "Error", "Error in data analyzed by ''" + "aDoctor" + "'' plugin.", NotificationType.ERROR)); */
                         ApplicationManager.getApplication().invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                final AdoctorToolWindow toolWindow = AdoctorToolWindow.getInstance(project);
+                                final AdoctorToolWindow toolWindow = AdoctorToolWindow.getInstance(project, outputPath, statusLabel);
                                 toolWindow.show();
                             }
                         });
@@ -334,15 +308,16 @@ public class DialogUI extends DialogWrapper {
 
         startProcessButton.getAccessibleContext().setAccessibleName("");
 
+        PrintStream out = new PrintStream(new TextAreaOutputStream(statusLabel));
+        System.setOut(out);
         getContentPane().setLayout(layout);
-
 
         return panel;
     }
 
     private void startProcessButtonAction() {
         String inputPath = this.inputFolderField.getText();
-        String outputPath = this.outputFileField.getText();
+        outputPath = this.outputFileField.getText();
         Integer[] smellTypesNeeded = new Integer[15];
         int numOfSmells = 0;
         if (DTWCCheck.isSelected()) {
@@ -455,12 +430,11 @@ public class DialogUI extends DialogWrapper {
 
         String[] args = {inputPath, outputPath, smellTypesString};
 
-/*        try {
+        try {
             RunAndroidSmellDetection.main(args);
-            viewResults.setEnabled(true);
-        } catch (IOException | CoreException ex) {
+        } catch (IOException ex) {
             System.out.println("Errore!");
-        }*/
+        }
 
     }
 

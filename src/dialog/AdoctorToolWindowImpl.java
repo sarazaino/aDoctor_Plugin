@@ -26,7 +26,7 @@ public final class AdoctorToolWindowImpl extends AdoctorToolWindow {
         final ActionManager actionManager = ActionManager.getInstance();
         final ActionToolbar toolbar  = actionManager.createActionToolbar(TOOL_WINDOW_ID, toolbarGroup,false);
         panel = new JPanel(new BorderLayout());
-        display = new AdoctorDisplay(project);
+        display = new AdoctorDisplay(project, TOOL_WINDOW_OUTPUT_PATH, TOOL_WINDOW_TEXT_AREA);
         panel.add(toolbar.getComponent(),BorderLayout.WEST);
         panel.add(display.getTabbedPane(),BorderLayout.CENTER);
         register();
