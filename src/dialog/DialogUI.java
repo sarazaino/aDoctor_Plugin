@@ -37,10 +37,7 @@ public class DialogUI extends DialogWrapper {
     private javax.swing.JTextField inputFolderField;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JTextField outputFileField;
-    private javax.swing.JButton outputFolderButton;
     private javax.swing.JButton startProcessButton;
-    private String outputPath;
     private javax.swing.JTextArea statusLabel;
     @NotNull private Project project;
     private JPanel panel;
@@ -63,10 +60,8 @@ public class DialogUI extends DialogWrapper {
         jLabel1 = new javax.swing.JLabel();
         inputFolderField = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        outputFileField = new javax.swing.JTextField();
         startProcessButton = new javax.swing.JButton();
         inputFolderButton = new javax.swing.JButton();
-        outputFolderButton = new javax.swing.JButton();
         DTWCCheck = new javax.swing.JCheckBox();
         DRCheck = new javax.swing.JCheckBox();
         DWCheck = new javax.swing.JCheckBox();
@@ -90,11 +85,6 @@ public class DialogUI extends DialogWrapper {
         inputFolderField.setEditable(false);
         inputFolderField.setToolTipText("Path of the Android SDK Platform Tools folder.");
 
-        jLabel2.setText("Output File");
-
-        outputFileField.setEditable(false);
-        outputFileField.setToolTipText("Device power profile (see https://source.android.com/devices/tech/power/).");
-
         startProcessButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/play-button.png"))); // NOI18N
         startProcessButton.setText("Start Process");
         startProcessButton.addActionListener(new java.awt.event.ActionListener() {
@@ -104,21 +94,14 @@ public class DialogUI extends DialogWrapper {
                     public void run(@NotNull ProgressIndicator progressIndicator) {
 
                         // start process
-                        startProcessButtonAction();
+                        startProcessButtonAction(progressIndicator);
 
                         // Set the progress bar percentage and text
-                        progressIndicator.setFraction(0.50);
-                        progressIndicator.setText("aDoctor is processing...");
 
-
-                        //Notifica nella status bar
-
-                        /*Notifications.Bus.notify(new com.intellij.notification.Notification("event", "Success", "Successfully data analyzed by ''" + "aDoctor" + "'' plugin.", NotificationType.INFORMATION));
-                        Notifications.Bus.notify(new com.intellij.notification.Notification("event", "Error", "Error in data analyzed by ''" + "aDoctor" + "'' plugin.", NotificationType.ERROR)); */
                         ApplicationManager.getApplication().invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                final AdoctorToolWindow toolWindow = AdoctorToolWindow.getInstance(project, outputPath, statusLabel);
+                                final AdoctorToolWindow toolWindow = AdoctorToolWindow.getInstance(project, statusLabel);
                                 toolWindow.show();
                             }
                         });
@@ -135,14 +118,6 @@ public class DialogUI extends DialogWrapper {
         inputFolderButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 inputFolderButtonActionPerformed(evt);
-            }
-        });
-
-        outputFolderButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/folder.png"))); // NOI18N
-        outputFolderButton.setText("Open");
-        outputFolderButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                outputFolderButtonActionPerformed(evt);
             }
         });
 
@@ -219,12 +194,10 @@ public class DialogUI extends DialogWrapper {
                                                         .addComponent(jLabel2))
                                                 .addGap(18, 18, 18)
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(outputFileField)
                                                         .addComponent(inputFolderField))
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(inputFolderButton, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(outputFolderButton, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                        .addComponent(inputFolderButton, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                         .addGroup(layout.createSequentialGroup()
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                                         .addGroup(layout.createSequentialGroup()
@@ -273,9 +246,7 @@ public class DialogUI extends DialogWrapper {
                                         .addComponent(inputFolderButton))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(jLabel2)
-                                        .addComponent(outputFileField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(outputFolderButton))
+                                        .addComponent(jLabel2))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(IDSCheck)
@@ -315,9 +286,8 @@ public class DialogUI extends DialogWrapper {
         return panel;
     }
 
-    private void startProcessButtonAction() {
+    private void startProcessButtonAction(ProgressIndicator progressIndicator) {
         String inputPath = this.inputFolderField.getText();
-        outputPath = this.outputFileField.getText();
         Integer[] smellTypesNeeded = new Integer[15];
         int numOfSmells = 0;
         if (DTWCCheck.isSelected()) {
@@ -410,14 +380,14 @@ public class DialogUI extends DialogWrapper {
         } else {
             smellTypesNeeded[14] = 0;
         }
+
+        progressIndicator.setFraction(0.50);
+        progressIndicator.setText("aDoctor is processing...");
+
         String smellTypesString = StringUtils.join(smellTypesNeeded);
         boolean valid = true;
         if (inputPath.isEmpty()) {
             System.out.println("Input folder not selected.");
-            valid = false;
-        }
-        if (outputPath.isEmpty()) {
-            System.out.println("Output file not selected.");
             valid = false;
         }
         if (numOfSmells == 0) {
@@ -428,7 +398,7 @@ public class DialogUI extends DialogWrapper {
             return;
         }
 
-        String[] args = {inputPath, outputPath, smellTypesString};
+        String[] args = {inputPath, smellTypesString};
 
         try {
             RunAndroidSmellDetection.main(args);
@@ -451,13 +421,4 @@ public class DialogUI extends DialogWrapper {
         }
     }
 
-    private void outputFolderButtonActionPerformed(ActionEvent evt) {
-        JFileChooser chooser = new JFileChooser();
-        int res = chooser.showOpenDialog(null);
-        if (res == JFileChooser.APPROVE_OPTION) {
-            File f = chooser.getSelectedFile();
-            String filename = f.getAbsolutePath();
-            outputFileField.setText(filename);
-        }
-    }
 }

@@ -22,11 +22,13 @@ public final class AdoctorToolWindowImpl extends AdoctorToolWindow {
     public AdoctorToolWindowImpl(@NotNull Project project) {
         this.project = project;
         final DefaultActionGroup toolbarGroup = new DefaultActionGroup();
+        toolbarGroup.add(new ExportAdoctorAction(new ImageIcon(getClass().getResource("/csv.png"))));
+        toolbarGroup.add(new BackAdoctorViewAction(this));
         toolbarGroup.add(new CloseAdoctorViewAction(this));
         final ActionManager actionManager = ActionManager.getInstance();
         final ActionToolbar toolbar  = actionManager.createActionToolbar(TOOL_WINDOW_ID, toolbarGroup,false);
         panel = new JPanel(new BorderLayout());
-        display = new AdoctorDisplay(project, TOOL_WINDOW_OUTPUT_PATH, TOOL_WINDOW_TEXT_AREA);
+        display = new AdoctorDisplay(project, TOOL_WINDOW_TEXT_AREA);
         panel.add(toolbar.getComponent(),BorderLayout.WEST);
         panel.add(display.getTabbedPane(),BorderLayout.CENTER);
         register();
@@ -36,7 +38,7 @@ public final class AdoctorToolWindowImpl extends AdoctorToolWindow {
         final ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
         myToolWindow = toolWindowManager.registerToolWindow("aDoctor",panel, ToolWindowAnchor.BOTTOM);
         myToolWindow.setTitle("Risultati");
-        myToolWindow.setIcon(new ImageIcon(getClass().getResource("/graph.png")));
+        myToolWindow.setIcon(new ImageIcon(getClass().getResource("/aDoctor.png")));
         myToolWindow.setAvailable(false,null);
     }
 

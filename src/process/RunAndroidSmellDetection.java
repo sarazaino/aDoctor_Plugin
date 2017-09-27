@@ -22,6 +22,7 @@ public class RunAndroidSmellDetection {
 
     private static final String NEW_LINE_SEPARATOR = "\n";
     public static String[] FILE_HEADER;
+    private static File fileName;
 
     // The folder contains the set of Android apps that need to be analyzed
     public static void main(String[] args) throws IOException {
@@ -31,8 +32,8 @@ public class RunAndroidSmellDetection {
 
         // Folder containing android apps to analyze
         File experimentDirectory = FileUtils.getFile(args[0]);
-        File fileName = new File(args[1]);
-        String smellsNeeded = args[2];
+        fileName = new File("C:\\Users\\Admin\\.IdeaIC2017.2\\system\\plugins-sandbox\\plugins\\aDoctorPlugin\\classes\\results.csv");
+        String smellsNeeded = args[1];
 
         FILE_HEADER = new String[StringUtils.countMatches(smellsNeeded, "1") + 1];
 
@@ -227,4 +228,8 @@ public class RunAndroidSmellDetection {
         return androidManifest;
     }
 
+    public static File getFileOutput()
+    {
+        return fileName;
+    }
 }

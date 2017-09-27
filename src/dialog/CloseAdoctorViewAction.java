@@ -9,7 +9,7 @@ public class CloseAdoctorViewAction extends AnAction {
     private final AdoctorToolWindow toolWindow;
 
     CloseAdoctorViewAction(AdoctorToolWindowImpl aDoctorToolWindow) {
-       super("Close", "Close Adoctor", AllIcons.Actions.Cancel);
+       super("Close", "Close aDoctor", AllIcons.Actions.Cancel);
        this.toolWindow = aDoctorToolWindow;
     }
 

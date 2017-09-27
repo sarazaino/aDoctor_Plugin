@@ -43,7 +43,6 @@ public class AdoctorDisplay {
     private Project project;
     private javax.swing.JTable smellTable;
     private String csvFile;
-    private String output_path;
     private JTextArea textArea;
 
     private Class[] TABLE_TYPES = {
@@ -53,9 +52,8 @@ public class AdoctorDisplay {
             java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
     };
 
-    public AdoctorDisplay(@NotNull Project project, String path, JTextArea area) {
+    public AdoctorDisplay(@NotNull Project project, JTextArea area) {
         this.project = project;
-        this.output_path = path;
         this.textArea = area;
 
         getTable();
@@ -92,9 +90,6 @@ public class AdoctorDisplay {
                 return types [columnIndex];
             }
 
-            /*public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }*/
 
         });
         smellTable.setDefaultEditor(Object.class, null);
@@ -106,7 +101,7 @@ public class AdoctorDisplay {
         }
 
         try {
-            this.csvFile = output_path;
+            this.csvFile = RunAndroidSmellDetection.getFileOutput().getAbsolutePath();
             this.updateTable("");
         } catch (IOException ex) {
         }
