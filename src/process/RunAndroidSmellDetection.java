@@ -3,11 +3,13 @@ package process;
 
 import beans.ClassBean;
 import beans.PackageBean;
+import com.intellij.openapi.project.Project;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import smellDetectionRules.*;
 
 import java.io.File;
@@ -23,6 +25,12 @@ public class RunAndroidSmellDetection {
     private static final String NEW_LINE_SEPARATOR = "\n";
     public static String[] FILE_HEADER;
     private static File fileName;
+    private static Project root_project;
+
+    public RunAndroidSmellDetection(Project project)
+    {
+        this.root_project = project;
+    }
 
     // The folder contains the set of Android apps that need to be analyzed
     public static void main(String[] args) throws IOException {
@@ -31,9 +39,9 @@ public class RunAndroidSmellDetection {
         System.out.println("Started at " + ft.format(new Date()));
 
         // Folder containing android apps to analyze
-        File experimentDirectory = FileUtils.getFile(args[0]);
-        fileName = new File("C:\\Users\\Admin\\.IdeaIC2017.2\\system\\plugins-sandbox\\plugins\\aDoctorPlugin\\classes\\results.csv");
-        String smellsNeeded = args[1];
+        File experimentDirectory = new File(root_project.getBasePath());
+        fileName = new File(System.getProperty("java.io.tmpdir")+"\\results.csv");
+        String smellsNeeded = args[0];
 
         FILE_HEADER = new String[StringUtils.countMatches(smellsNeeded, "1") + 1];
 
