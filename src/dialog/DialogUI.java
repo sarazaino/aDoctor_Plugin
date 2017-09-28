@@ -1,5 +1,8 @@
 package dialog;
 
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.progress.*;
 import com.intellij.openapi.project.Project;
@@ -9,9 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import process.RunAndroidSmellDetection;
 import javax.annotation.Nullable;
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 
@@ -39,6 +39,7 @@ public class DialogUI extends DialogWrapper {
     private javax.swing.JTextArea statusLabel;
     @NotNull private Project project;
     private JPanel panel;
+    private boolean valid;
 
 
     public DialogUI(Project project) {
@@ -75,28 +76,35 @@ public class DialogUI extends DialogWrapper {
         UCCheck = new javax.swing.JCheckBox();
         panel = new JPanel();
         statusLabel = new javax.swing.JTextArea();
+        valid = true;
 
         startProcessButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/play-button.png"))); // NOI18N
         startProcessButton.setText("Start Process");
         startProcessButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
 
-                ProgressManager.getInstance().run(new Task.Backgroundable(project, "Title"){
-                    public void run(@NotNull ProgressIndicator progressIndicator) {
+                    ProgressManager.getInstance().run(new Task.Backgroundable(project, "Title") {
+                        public void run(@NotNull ProgressIndicator progressIndicator) {
 
-                        // start process
-                        startProcessButtonAction(progressIndicator);
+                            // start process
+                            startProcessButtonAction(progressIndicator);
 
-                        // Set the progress bar percentage and text
-
-                        ApplicationManager.getApplication().invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                final AdoctorToolWindow toolWindow = AdoctorToolWindow.getInstance(project, statusLabel);
-                                toolWindow.show();
+                            // Set the progress bar percentage and text
+                            if (valid) {
+                                ApplicationManager.getApplication().invokeLater(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        final AdoctorToolWindow toolWindow = AdoctorToolWindow.getInstance(project, statusLabel);
+                                        toolWindow.show();
+                                    }
+                                });
                             }
-                        });
-                    }});
+                            else
+                            {
+                                Notifications.Bus.notify(new Notification("Valid", "Error", "Select at least one smell.", NotificationType.ERROR));
+                            }
+                        }
+                    });
 
                 myDialog.close(0);
             }
@@ -361,26 +369,23 @@ public class DialogUI extends DialogWrapper {
         progressIndicator.setFraction(0.50);
         progressIndicator.setText("aDoctor is processing...");
 
-
         String smellTypesString = StringUtils.join(smellTypesNeeded);
-        boolean valid = true;
 
         if (numOfSmells == 0) {
             System.out.println("None of the smells has been selected.");
             valid = false;
         }
-        if (valid == false) {
-            return;
-        }
 
-        String[] args = {smellTypesString};
+        if (valid) {
+            String[] args = {smellTypesString};
 
-        try {
-            RunAndroidSmellDetection runAndroidSmellDetection = new RunAndroidSmellDetection(project);
-            runAndroidSmellDetection.main(args);
+            try {
+                RunAndroidSmellDetection runAndroidSmellDetection = new RunAndroidSmellDetection(project);
+                runAndroidSmellDetection.main(args);
 
-        } catch (IOException ex) {
-            System.out.println("Errore!");
+            } catch (IOException ex) {
+                System.out.println("Errore!");
+            }
         }
 
     }
