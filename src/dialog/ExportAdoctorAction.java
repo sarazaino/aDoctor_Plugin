@@ -36,18 +36,25 @@ public class ExportAdoctorAction extends AnAction {
             }
         });
         chooser.showOpenDialog(null);
-        File selectedFile = chooser.getSelectedFile();
-        String fileName = selectedFile.getAbsolutePath();
-        final String extension = ".csv";
-        if (!fileName.endsWith(extension)) {
-            fileName += extension;
+        if (chooser.getSelectedFile()!=null)
+        {
+            File selectedFile = chooser.getSelectedFile();
+            String fileName = selectedFile.getAbsolutePath();
+            final String extension = ".csv";
+            if (!fileName.endsWith(extension)) {
+                fileName += extension;
+            }
+            File source = RunAndroidSmellDetection.getFileOutput();
+            File dest = new File(fileName);
+            try {
+                FileUtils.copyFile(source, dest);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        File source = RunAndroidSmellDetection.getFileOutput();
-        File dest = new File(fileName);
-        try {
-            FileUtils.copyFile(source, dest);
-        } catch (IOException e) {
-            e.printStackTrace();
+        else
+        {
+
         }
     }
 }
