@@ -1,5 +1,8 @@
 package dialog;
 
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.apache.commons.io.FileUtils;
@@ -48,6 +51,7 @@ public class ExportAdoctorAction extends AnAction {
             File dest = new File(fileName);
             try {
                 FileUtils.copyFile(source, dest);
+                Notifications.Bus.notify(new Notification("Valid", "Success", "CSV file was downloaded successfully!", NotificationType.INFORMATION));
             } catch (IOException e) {
                 e.printStackTrace();
             }
