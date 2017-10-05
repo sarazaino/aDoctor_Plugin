@@ -3,6 +3,9 @@ package process;
 
 import beans.ClassBean;
 import beans.PackageBean;
+import com.intellij.ide.plugins.IdeaPluginDescriptor;
+import com.intellij.ide.plugins.PluginManager;
+import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.project.Project;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -39,8 +42,10 @@ public class RunAndroidSmellDetection {
         System.out.println("Started at " + ft.format(new Date()));
 
         // Folder containing android apps to analyze
+        final PluginId pluginId = PluginId.getId("idaDoctor");
+        final IdeaPluginDescriptor pluginDescriptor = PluginManager.getPlugin(pluginId);
         File experimentDirectory = new File(root_project.getBasePath());
-        fileName = new File(System.getProperty("java.io.tmpdir")+"\\results.csv");
+        fileName = new File(pluginDescriptor.getPath().getAbsolutePath()+"/risorse/results.csv");
         String smellsNeeded = args[0];
 
         FILE_HEADER = new String[StringUtils.countMatches(smellsNeeded, "1") + 1];
