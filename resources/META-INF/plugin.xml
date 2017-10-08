@@ -5,13 +5,26 @@
   <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
 
   <description><![CDATA[
-      Enter short description for your plugin here.<br>
-      <em>most HTML tags may be used</em>
+      aDoctor_Plugin is a plugin based on the existing Code Smell Detector aDoctor,
+      which is able to detect a set of 15 Android-specific design flaws.<br><br>
+
+      <h4>Getting started</h4>
+      <br>
+
+      Select the menu <code>Analyze</code> and click on <code>aDoctor</code>.
+      In aDoctor's window select the <em>smells</em> you want to research in your code,
+      from the given set of 15 Android-specific design flaws. Then click on <code>Start</code> button.
+      The analysis will be executed on the current project on Android Studio, while the output file will be
+      saved in the directory <i>risorse</i> of the project.
+      If you want, selecting the <code>Download CSV</code> button, you can also copy this output file
+      to another destination, entering a new path in the apposite window.
+
+
     ]]></description>
 
   <change-notes><![CDATA[
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>
+      The project is developed using Java and it is able to identify
+      <em>design problems in Android apps</em>.<br>
     ]]>
   </change-notes>
 
