@@ -45,7 +45,7 @@ public class RunAndroidSmellDetection {
         final PluginId pluginId = PluginId.getId("idaDoctor");
         final IdeaPluginDescriptor pluginDescriptor = PluginManager.getPlugin(pluginId);
         File experimentDirectory = new File(root_project.getBasePath());
-        fileName = new File(pluginDescriptor.getPath().getAbsolutePath()+"/risorse/results.csv");
+        fileName = new File(pluginDescriptor.getPath().getAbsolutePath()+"/resources/results.csv");
         String smellsNeeded = args[0];
 
         FILE_HEADER = new String[StringUtils.countMatches(smellsNeeded, "1") + 1];

@@ -19,9 +19,9 @@ public class DialogAction extends AnAction {
         final Project project = CommonDataKeys.PROJECT.getData(dataContext);
         final PluginId pluginId = PluginId.getId("idaDoctor");
         final IdeaPluginDescriptor pluginDescriptor = PluginManager.getPlugin(pluginId);
-        if(!new File(pluginDescriptor.getPath().getAbsolutePath()+"/risorse").exists())
+        if(!new File(pluginDescriptor.getPath().getAbsolutePath()+"/resources").exists())
         {
-            new File(pluginDescriptor.getPath().getAbsolutePath()+"/risorse").mkdirs();
+            new File(pluginDescriptor.getPath().getAbsolutePath()+"/resources").mkdirs();
         }
         new DialogUI(project).show();
 
